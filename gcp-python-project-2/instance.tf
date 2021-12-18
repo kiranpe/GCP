@@ -28,7 +28,7 @@ output "external_ips" {
 
 resource "null_resource" "check_status" {
   provisioner "local-exec" {
-    command = "sleep 120 && ./gcp_services_status.py ${google_storage_bucket.my_bucket.name} ${google_compute_instance.vms[0].name} ${google_compute_instance.vms[1].name} ${google_compute_instance.vms[0].network_interface.0.access_config.0.nat_ip} ${google_compute_instance.vms[1].network_interface.0.access_config.0.nat_ip}"
+    command = "sleep 120 && ./gcp_services_status.py ${google_storage_bucket.my_bucket.name} ${google_compute_instance.vms[0].name} ${google_compute_instance.vms[1].name}"
   }
 
   depends_on = [google_compute_instance.vms]

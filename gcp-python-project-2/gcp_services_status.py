@@ -12,12 +12,13 @@ from googleapiclient import discovery
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "/home/kiran/devops/GCP/credentials.json"
 
-projectId = os.popen("""cat terraform.tfvars | grep projectId | awk -F"=" '{print $2}' | tr -d '"' | sed 's/^ //g'""").read().strip()
 bucket_name = sys.argv[1]
+instances = [sys.argv[2], sys.argv[3]]
+
+projectId = os.popen("""cat terraform.tfvars | grep projectId | awk -F"=" '{print $2}' | tr -d '"' | sed 's/^ //g'""").read().strip()
+zone = os.popen("""cat terraform.tfvars | grep zone | awk -F"=" '{print $2}' | tr -d '"' | sed 's/^ //g'""").read().strip()
 destination_blob_name = os.popen("""cat terraform.tfvars | grep file_name | awk -F"=" '{print $2}' | tr -d '"' | sed 's/^ //g'""").read().strip()
 source_file_name = os.popen("""cat terraform.tfvars | grep file_name | awk -F"=" '{print $2}' | tr -d '"' | sed 's/^ //g'""").read().strip()
-zone = os.popen("""cat terraform.tfvars | grep zone | awk -F"=" '{print $2}' | tr -d '"' | sed 's/^ //g'""").read().strip()
-instances = [sys.argv[2], sys.argv[3]]
 
 storage_client = storage.Client()
 
@@ -40,7 +41,7 @@ list_service_accounts(projectId)
 
 def check_bucket():
     bucket = storage_client.get_bucket(bucket_name)
-    if bucket.name in sys.argv[1]:
+    if bucket.name in bucket_name:
       print("Bucket | {} | Exists".format(bucket.name)) 
       print(" ")
     else:
@@ -61,13 +62,11 @@ def upload_file():
     object_name_in_gcs_bucket.upload_from_filename(source_file_name)
     print('file: ',source_file_name,' uploaded to bucket: ',bucket.name,' successfully')
     print(" ")
-    print(" ")
   except Exception as e:
     print("file: {} upload to bucket: {} | Failed".format(source_file_name,bucket.name))
     if e.code == 403:
       print("Service Account {} does not have storage.objects.create access to the bucket: {}".format(sa,bucket.name))
-    print(" ")
-    print(" ")
+      print(" ")
  
 upload_file()
 
@@ -75,19 +74,15 @@ def instance_status():
   service = discovery.build('compute', 'beta', credentials=credentials)
 
   for instance_name in instances:
-      request = service.instances().get(project=projectId, zone=zone, instance=instance_name)
-      response = request.execute()
-      print("{} | status | {}".format(instance_name,response['status']))
-      print(" ")
+    response = service.instances().get(project=projectId, zone=zone, instance=instance_name).execute()
+    print("{} | status | {}".format(instance_name,response['status']))
+    print(" ")
       
 instance_status()
 
 def ping_instance():
-  print("Checking Firewall Rules!!")
   try:
-    subprocess.call(['sh', './connect_vm.sh', instances[0], instances[1], zone])
-    print(" ")
-    print("Ping is Successful from {} to {}!!".format(instances[0],instances[1])) 
+    subprocess.call(['sh', './ping_test.sh', instances[0], instances[1], zone])
     print(" ")
   except:
     print("Ping is Failing from {} to {}!!".format(instances[0],instances[1]))
@@ -96,7 +91,6 @@ def ping_instance():
 ping_instance()
 
 def check_docker_service():
- print("Checking Docker Service Status!!")
  for vm in instances:
   try:
    subprocess.call(['sh', './check_docker_service.sh', projectId, zone, vm])
@@ -107,7 +101,12 @@ def check_docker_service():
 check_docker_service()
 
 def container_status():
- ips = [sys.argv[4], sys.argv[5]]
+ ips = []
+ 
+ service = discovery.build('compute', 'beta', credentials=credentials)
+ for instance_name in instances:
+   response = service.instances().get(project=projectId, zone=zone, instance=instance_name).execute()
+   ips.append(response['networkInterfaces'][0]['accessConfigs'][0]['natIP'])
 
  for host in ips:
   container_urls = ["http://" +host+ ":10800" +"/index.html", "http://" +host+ ":10801" +"/index.html"]
