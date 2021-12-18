@@ -91,21 +91,19 @@ def ping_instance():
   try:
     subprocess.call(['sh', './connect_vm.sh', instances[0], instances[1], zone])
     print(" ")
-    print("Ping is Successful from {} to {}!!".format(vm1,vm2)) 
+    print("Ping is Successful from {} to {}!!".format(instances[0],instances[1])) 
     print(" ")
   except:
-    print("Ping is Failing from {} to {}!!".format(vm1,vm2))
+    print("Ping is Failing from {} to {}!!".format(instances[0],instances[1]))
     print(" ")
 
 ping_instance()
 
 def check_docker_service():
- vm_zone=zone
-  
  print("Checking Docker Service Status!!")
  for vm in instances:
   try:
-   subprocess.call(['sh', './check_docker_service.sh', projectId, vm_zone, vm])
+   subprocess.call(['sh', './check_docker_service.sh', projectId, zone, vm])
    print(" ")
   except:
    print("Script is Failed!! Check script once!!")
@@ -113,7 +111,7 @@ def check_docker_service():
 check_docker_service()
 
 def container_status():
- ips = [sys.argv[4]]
+ ips = [sys.argv[4], sys.argv[5]]
 
  for host in ips:
   container_urls = ["http://" +host+ ":10800" +"/index.html", "http://" +host+ ":10801" +"/index.html"]
