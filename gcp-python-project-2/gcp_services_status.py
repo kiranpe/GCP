@@ -110,8 +110,7 @@ def container_status():
 
  for host in ips:
   container_urls = ["http://" +host+ ":10800" +"/index.html", "http://" +host+ ":10801" +"/index.html"]
-  
-  print("Checking Container Status Now on {}!!".format(host))
+  print("Checking Container Status on {}!!".format(host))
   for url in container_urls:
    try:
      response = requests.get(url)

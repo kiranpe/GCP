@@ -2,7 +2,7 @@
 sym_link='/etc/systemd/system/multi-user.target.wants/docker.service'
 host=$1
 
-echo "Checking Docker Service Status!!"
+echo "Checking Docker Service Status on $host!!"
 
 if [ -L $sym_link ];then
   echo "Docker Service Enabled on $host!!"
