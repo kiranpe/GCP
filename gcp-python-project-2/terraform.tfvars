@@ -4,6 +4,7 @@ projectId       = "pythonproject-335216"
 env             = ["uat", "prod"]
 vm              = ["vm1", "vm2"]
 client          = ["abc", "xyz"]
+sa_id           = "python-readonly-access"
 vpc             = "main"
 bucket_name     = "bucket1"
 public_subnets  = ["10.26.1.0/24", "10.26.2.0/24"]

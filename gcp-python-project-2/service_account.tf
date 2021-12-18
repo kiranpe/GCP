@@ -1,5 +1,5 @@
 resource "google_service_account" "sa" {
-  account_id   = "pythonlogin-1"
+  account_id   = var.sa_id
   display_name = "readaccess"
 }
 
@@ -27,7 +27,7 @@ resource "google_storage_bucket" "my_bucket" {
 
 resource "null_resource" "attach_sa" {
   provisioner "local-exec" {
-    command = "gsutil acl ch -u ${google_service_account.sa.account_id}@pythonproject-335216.iam.gserviceaccount.com:R gs://${google_storage_bucket.my_bucket.name}"
+    command = "gsutil acl ch -u ${google_service_account.sa.account_id}@${var.projectId}.iam.gserviceaccount.com:R gs://${google_storage_bucket.my_bucket.name}"
   }
 
   depends_on = [google_service_account.sa, google_storage_bucket.my_bucket]

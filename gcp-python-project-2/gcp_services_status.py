@@ -12,13 +12,14 @@ from googleapiclient import discovery
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "/home/kiran/devops/GCP/credentials.json"
 
-storage_client = storage.Client()
 projectId = os.popen("""cat terraform.tfvars | grep projectId | awk -F"=" '{print $2}' | tr -d '"' | sed 's/^ //g'""").read().strip()
 bucket_name = sys.argv[1]
 destination_blob_name = os.popen("""cat terraform.tfvars | grep file_name | awk -F"=" '{print $2}' | tr -d '"' | sed 's/^ //g'""").read().strip()
 source_file_name = os.popen("""cat terraform.tfvars | grep file_name | awk -F"=" '{print $2}' | tr -d '"' | sed 's/^ //g'""").read().strip()
 zone = os.popen("""cat terraform.tfvars | grep zone | awk -F"=" '{print $2}' | tr -d '"' | sed 's/^ //g'""").read().strip()
 instances = [sys.argv[2], sys.argv[3]]
+
+storage_client = storage.Client()
 
 def list_service_accounts(project_id):
   credentials = service_account.Credentials.from_service_account_file(
@@ -50,7 +51,7 @@ def check_bucket():
 check_bucket()
 
 def upload_file():
-  client = storage.Client.from_service_account_json(json_credentials_path='credentials.json')
+  client = storage_client.from_service_account_json(json_credentials_path='credentials.json')
   bucket = client.get_bucket(bucket_name)
 
   try:
@@ -86,12 +87,9 @@ def instance_status():
 instance_status()
 
 def ping_instance():
-  vm1=instances[0]
-  vm2=instances[1]
-  zone_value=zone
   print("Checking Firewall Rules!!")
   try:
-    subprocess.call(['sh', './connect_vm.sh', vm1, vm2, zone_value])
+    subprocess.call(['sh', './connect_vm.sh', instances[0], instances[1], zone])
     print(" ")
     print("Ping is Successful from {} to {}!!".format(vm1,vm2)) 
     print(" ")
@@ -115,7 +113,7 @@ def check_docker_service():
 check_docker_service()
 
 def container_status():
- ips = [sys.argv[4], sys.argv[5]]
+ ips = [sys.argv[4]]
 
  for host in ips:
   container_urls = ["http://" +host+ ":10800" +"/index.html", "http://" +host+ ":10801" +"/index.html"]

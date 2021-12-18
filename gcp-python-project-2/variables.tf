@@ -26,6 +26,10 @@ variable "client" {
   type = list(string)
 }
 
+variable "sa_id" {
+  type = string
+}
+
 variable "vpc" {
   type = string
 }
