@@ -5,5 +5,6 @@ host=$1
 if [ -L $sym_link ];then
   echo "Docker Service Enabled on $host!!"
 else
-  echo "Docker Service is Disabled on $host . Please enable it!!" 
+  echo "Docker Service is Disabled on $host . Enabling it!!" 
+  sudo systemctl enable docker
 fi
