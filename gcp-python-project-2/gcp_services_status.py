@@ -50,6 +50,9 @@ def check_bucket():
 check_bucket()
 
 def upload_file():
+  with open("credentials.json") as file:
+    data = json.load(file)
+    sa = data["client_email"]
   client = storage_client.from_service_account_json(json_credentials_path='credentials.json')
   bucket = client.get_bucket(bucket_name)
 
@@ -62,7 +65,7 @@ def upload_file():
   except Exception as e:
     print("file: {} upload to bucket: {} | Failed".format(source_file_name,bucket.name))
     if e.code == 403:
-      print("Service Account does not have storage.objects.create access to the bucket: {}".format(bucket.name))
+      print("Service Account {} does not have storage.objects.create access to the bucket: {}".format(sa,bucket.name))
     print(" ")
     print(" ")
  
