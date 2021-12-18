@@ -21,21 +21,20 @@ instances = [sys.argv[2], sys.argv[3]]
 
 storage_client = storage.Client()
 
-def list_service_accounts(project_id):
-  credentials = service_account.Credentials.from_service_account_file(
+credentials = service_account.Credentials.from_service_account_file(
         filename=os.environ['GOOGLE_APPLICATION_CREDENTIALS'],
         scopes=['https://www.googleapis.com/auth/cloud-platform'])
 
-  service = discovery.build(
-        'iam', 'v1', credentials=credentials)
+def list_service_accounts(project_id):
+  service = discovery.build('iam', 'v1', credentials=credentials)
 
   service_accounts = service.projects().serviceAccounts().list(
-        name='projects/' + project_id).execute()
+     name='projects/' + project_id).execute()
 
   for account in service_accounts['accounts']:
-        if account['displayName'] in 'readaccess':
-           print("Service Account | {} | Exists".format(account['name']))
-           print(" ")
+     if account['displayName'] in 'readaccess':
+       print("Service Account | {} | Exists".format(account['name']))
+       print(" ")
 
 list_service_accounts(projectId)
 
@@ -55,13 +54,11 @@ def upload_file():
   bucket = client.get_bucket(bucket_name)
 
   try:
- 
     object_name_in_gcs_bucket = bucket.blob(destination_blob_name)
     object_name_in_gcs_bucket.upload_from_filename(source_file_name)
     print('file: ',source_file_name,' uploaded to bucket: ',bucket.name,' successfully')
     print(" ")
     print(" ")
-
   except Exception as e:
     print("file: {} upload to bucket: {} | Failed".format(source_file_name,bucket.name))
     if e.code == 403:
@@ -72,10 +69,6 @@ def upload_file():
 upload_file()
 
 def instance_status():
-  credentials = service_account.Credentials.from_service_account_file(
-        filename=os.environ['GOOGLE_APPLICATION_CREDENTIALS'],
-        scopes=['https://www.googleapis.com/auth/cloud-platform'])
-
   service = discovery.build('compute', 'beta', credentials=credentials)
 
   for instance_name in instances:
@@ -120,7 +113,6 @@ def container_status():
   for url in container_urls:
    try:
      response = requests.get(url)
-
      if response.status_code == 200:
        if urlparse(url).port == 10800:
          print("Nginx Container is Up and Running on host: {}".format(host))
