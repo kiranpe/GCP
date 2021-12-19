@@ -13,7 +13,7 @@ resource "google_service_account_key" "mykey" {
   service_account_id = google_service_account.sa.name
 }
 
-resource "local_file" "sa_file" {
+resource "local_file" "sa_credential_file" {
   depends_on      = [google_service_account.sa]
   filename        = "credentials.json"
   file_permission = "0600"
@@ -21,8 +21,9 @@ resource "local_file" "sa_file" {
 }
 
 resource "google_storage_bucket" "my_bucket" {
-  name     = "${var.bucket_name}-${var.env[0]}-${var.client[0]}"
-  location = var.region
+  force_destroy = "true"
+  name          = "${var.bucket_name}-${var.env[0]}-${var.client[0]}"
+  location      = var.region
 }
 
 resource "null_resource" "attach_sa" {
