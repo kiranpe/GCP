@@ -21,8 +21,8 @@ with open("terraform.tfstate") as file:
   vm1 = (data['resources'][3]['instances'][0]['attributes']['name'])
   vm2 = (data['resources'][3]['instances'][1]['attributes']['name'])
  
-destination_blob_name = os.popen("""cat terraform.tfvars | grep file_name | awk -F"=" '{print $2}' | tr -d '"' | sed 's/^ //g'""").read().strip()
-source_file_name = os.popen("""cat terraform.tfvars | grep file_name | awk -F"=" '{print $2}' | tr -d '"' | sed 's/^ //g'""").read().strip()
+destination_blob_name = os.popen("""cat main.tf | grep file_name | awk -F"=" '{print $2}' | tr -d '"' | sed 's/^ //g'""").read().strip()
+source_file_name = os.popen("""cat main.tf | grep file_name | awk -F"=" '{print $2}' | tr -d '"' | sed 's/^ //g'""").read().strip()
 
 instances = [vm1, vm2]
 
