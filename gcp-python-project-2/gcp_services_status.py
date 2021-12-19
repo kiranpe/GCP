@@ -83,7 +83,7 @@ def instance_status():
     response = service.instances().get(project=projectId, zone=zone, instance=instance_name).execute()
     print("{} | status | {}".format(instance_name,response['status']))
     print(" ")
-      
+   
 instance_status()
 
 def ping_instance():
