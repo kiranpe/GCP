@@ -91,7 +91,6 @@ def ping_instance():
     subprocess.call(['sh', './ping_test.sh', instances[0], instances[1], zone])
     print(" ")
   except:
-    print("Ping is Failing from {} to {}!!".format(instances[0],instances[1]))
     print(" ")
 
 ping_instance()
@@ -102,17 +101,21 @@ def check_docker_service():
    subprocess.call(['sh', './check_docker_service.sh', projectId, zone, vm])
    print(" ")
   except:
-   print("Script is Failed!! Check script once!!")
+    print("Script is Failed!! Check script once!!")
  
 check_docker_service()
 
 def container_status():
  ips = []
- 
- service = discovery.build('compute', 'beta', credentials=credentials)
- for instance_name in instances:
-   response = service.instances().get(project=projectId, zone=zone, instance=instance_name).execute()
-   ips.append(response['networkInterfaces'][0]['accessConfigs'][0]['natIP'])
+
+ try: 
+   service = discovery.build('compute', 'beta', credentials=credentials)
+   for instance_name in instances:
+     response = service.instances().get(project=projectId, zone=zone, instance=instance_name).execute()
+     ips.append(response['networkInterfaces'][0]['accessConfigs'][0]['natIP'])
+ except:
+   print("{} Server is NOT RUNNING!! Not able to get IP Address!!".format(instance_name))
+   print("")
 
  for host in ips:
   container_urls = ["http://" +host+ ":10800" +"/index.html", "http://" +host+ ":10801" +"/index.html"]
