@@ -12,13 +12,19 @@ from googleapiclient import discovery
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "/home/kiran/devops/GCP/credentials.json"
 
-bucket_name = sys.argv[1]
-instances = [sys.argv[2], sys.argv[3]]
+with open("terraform.tfstate") as file:
+  data = json.load(file)
 
-projectId = os.popen("""cat terraform.tfvars | grep projectId | awk -F"=" '{print $2}' | tr -d '"' | sed 's/^ //g'""").read().strip()
-zone = os.popen("""cat terraform.tfvars | grep zone | awk -F"=" '{print $2}' | tr -d '"' | sed 's/^ //g'""").read().strip()
+  projectId = (data['resources'][0]['instances'][0]['attributes']['project'])
+  zone = (data['resources'][3]['instances'][0]['attributes']['zone'])
+  bucket_name = (data['resources'][10]['instances'][0]['attributes']['name'])
+  vm1 = (data['resources'][3]['instances'][0]['attributes']['name'])
+  vm2 = (data['resources'][3]['instances'][1]['attributes']['name'])
+ 
 destination_blob_name = os.popen("""cat terraform.tfvars | grep file_name | awk -F"=" '{print $2}' | tr -d '"' | sed 's/^ //g'""").read().strip()
 source_file_name = os.popen("""cat terraform.tfvars | grep file_name | awk -F"=" '{print $2}' | tr -d '"' | sed 's/^ //g'""").read().strip()
+
+instances = [vm1, vm2]
 
 storage_client = storage.Client()
 
