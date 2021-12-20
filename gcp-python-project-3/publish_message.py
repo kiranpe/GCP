@@ -28,7 +28,7 @@ print("Publisher messageId=" + future.result())
 subscription_path = subscriber.subscription_path(project_id, subscription_name)
 
 def callback(message: pubsub_v1.subscriber.message.Message) -> None:
-    #print(f"Received {message}.")
+    #print(f"Received {message}\n")
     print(message.data.decode())
     message.ack()
 
