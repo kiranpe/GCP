@@ -40,18 +40,16 @@ def list_service_accounts(project_id):
 
   for account in service_accounts['accounts']:
      if account['displayName'] in 'readaccess':
-       print("Service Account | {} | Exists".format(account['name']))
-       print(" ")
+       print("Service Account | {} | Exists\n".format(account['name']))
 
 list_service_accounts(projectId)
 
 def check_bucket():
     bucket = storage_client.get_bucket(bucket_name)
     if bucket.name in bucket_name:
-      print("Bucket | {} | Exists".format(bucket.name)) 
-      print(" ")
+      print("Bucket | {} | Exists\n".format(bucket.name)) 
     else:
-      print("Bucket | {} | Not Exists".format(bucket.name))
+      print("Bucket | {} | Doesn't Exists\n".format(bucket.name))
       print(" ")
 
 check_bucket()
@@ -66,13 +64,11 @@ def upload_file():
   try:
     object_name_in_gcs_bucket = bucket.blob(destination_blob_name)
     object_name_in_gcs_bucket.upload_from_filename(source_file_name)
-    print('file: ',source_file_name,' uploaded to bucket: ',bucket.name,' successfully')
-    print(" ")
+    print('file: ',source_file_name,' uploaded to bucket: ',bucket.name,' successfully\n')
   except Exception as e:
-    print("file: {} upload to bucket: {} | Failed".format(source_file_name,bucket.name))
+    print("file: {} upload to bucket: {} | Failed\n".format(source_file_name,bucket.name))
     if e.code == 403:
-      print("Service Account {} does not have storage.objects.create access to the bucket: {}".format(sa,bucket.name))
-      print(" ")
+      print("Service Account {} does not have storage.objects.create access to the bucket: {}\n".format(sa,bucket.name))
  
 upload_file()
 
@@ -81,8 +77,7 @@ def instance_status():
 
   for instance_name in instances:
     response = service.instances().get(project=projectId, zone=zone, instance=instance_name).execute()
-    print("{} | status | {}".format(instance_name,response['status']))
-    print(" ")
+    print("{} | status | {}\n".format(instance_name,response['status']))
    
 instance_status()
 
@@ -101,7 +96,7 @@ def check_docker_service():
    subprocess.call(['sh', './check_docker_service.sh', projectId, zone, vm])
    print(" ")
   except:
-    print("Script is Failed!! Check script once!!")
+    print("Script is Failed!! Check script once!!\n")
  
 check_docker_service()
 
@@ -114,8 +109,7 @@ def container_status():
      response = service.instances().get(project=projectId, zone=zone, instance=instance_name).execute()
      ips.append(response['networkInterfaces'][0]['accessConfigs'][0]['natIP'])
  except:
-   print("{} Server is NOT RUNNING!! Not able to get IP Address!!".format(instance_name))
-   print("")
+   print("{} Server is NOT RUNNING!! Not able to get IP Address!!\n".format(instance_name))
 
  for host in ips:
   container_urls = ["http://" +host+ ":10800" +"/index.html", "http://" +host+ ":10801" +"/index.html"]
@@ -125,17 +119,13 @@ def container_status():
      response = requests.get(url)
      if response.status_code == 200:
        if urlparse(url).port == 10800:
-         print("Nginx Container is Up and Running on host: {}".format(host))
-         print(" ")
+         print("Nginx Container is Up and Running on host: {}\n".format(host))
        else:
-         print("Apache Container is Up and Running on host: {}".format(host))
-         print(" ")
+         print("Apache Container is Up and Running on host: {}\n".format(host))
    except:
      if urlparse(url).port == 10800:
-       print("Nginx Container on host: {} is not running. Please check.".format(host))
-       print(" ")
+       print("Nginx Container on host: {} is not running. Please check.\n".format(host))
      else:
-       print("Apache Container on host: {} is not running. Please check.".format(host))
-       print(" ")
+       print("Apache Container on host: {} is not running. Please check.\n".format(host))
 
 container_status()
