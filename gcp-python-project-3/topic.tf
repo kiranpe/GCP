@@ -30,11 +30,3 @@ resource "google_pubsub_subscription" "sub" {
 
   enable_message_ordering = false
 }
-
-resource "null_resource" "pubsub" {
-  provisioner "local-exec" {
-    command = "sleep 10 && ./publish_message.py"
-  }
-
-  depends_on = [google_pubsub_subscription.sub]
-}
