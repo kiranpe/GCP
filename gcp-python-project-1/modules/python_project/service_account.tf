@@ -13,22 +13,22 @@ resource "google_service_account_key" "mykey" {
   service_account_id = google_service_account.sa.name
 }
 
-resource "local_file" "sa_file" {
-  depends_on      = [google_service_account.sa]
-  filename        = "credentials.json"
-  file_permission = "0600"
-  content         = base64decode(google_service_account_key.mykey.private_key)
-}
-
 resource "google_storage_bucket" "my_bucket" {
   name     = var.bucket_name
   location = var.region
 }
 
-resource "null_resource" "attach_sa" {
-  provisioner "local-exec" {
-    command = "gsutil acl ch -u pythonlogin@pythonproject-335216.iam.gserviceaccount.com:R gs://kiran-python-project-1"
-  }
+resource "google_storage_bucket_acl" "read-acl" {
+  bucket = google_storage_bucket.my_bucket.name
 
-  depends_on = [google_service_account.sa, google_storage_bucket.my_bucket]
+  role_entity = [
+    "READER:user-${google_service_account.sa.account_id}@${var.projectId}.iam.gserviceaccount.com",
+  ]
+}
+
+resource "local_file" "sa_file" {
+  depends_on      = [google_service_account.sa]
+  filename        = "credentials.json"
+  file_permission = "0600"
+  content         = base64decode(google_service_account_key.mykey.private_key)
 }

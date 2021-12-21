@@ -15,16 +15,16 @@ resource "google_storage_bucket" "my_bucket" {
   location      = var.region
 }
 
+resource "google_service_account_key" "mykey" {
+  service_account_id = google_service_account.sa.name
+}
+
 resource "google_storage_bucket_acl" "read-acl" {
   bucket = google_storage_bucket.my_bucket.name
 
   role_entity = [
     "READER:user-${google_service_account.sa.account_id}@${var.projectId}.iam.gserviceaccount.com",
   ]
-}
-
-resource "google_service_account_key" "mykey" {
-  service_account_id = google_service_account.sa.name
 }
 
 resource "local_file" "sa_credential_file" {
