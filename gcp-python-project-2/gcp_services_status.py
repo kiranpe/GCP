@@ -32,6 +32,8 @@ credentials = service_account.Credentials.from_service_account_file(
         filename=os.environ['GOOGLE_APPLICATION_CREDENTIALS'],
         scopes=['https://www.googleapis.com/auth/cloud-platform'])
 
+service = discovery.build('compute', 'beta', credentials=credentials)
+
 def list_service_accounts(project_id):
   service = discovery.build('iam', 'v1', credentials=credentials)
 
@@ -66,15 +68,13 @@ def upload_file():
     object_name_in_gcs_bucket.upload_from_filename(source_file_name)
     print('file: ',source_file_name,' uploaded to bucket: ',bucket.name,' successfully\n')
   except Exception as e:
-    print("file: {} upload to bucket: {} | Failed\n".format(source_file_name,bucket.name))
+    print("file: {} upload to bucket: {} | Failed".format(source_file_name,bucket.name))
     if e.code == 403:
       print("Service Account {} does not have storage.objects.create access to the bucket: {}\n".format(sa,bucket.name))
  
 upload_file()
 
 def instance_status():
-  service = discovery.build('compute', 'beta', credentials=credentials)
-
   for instance_name in instances:
     response = service.instances().get(project=projectId, zone=zone, instance=instance_name).execute()
     print("{} | status | {}\n".format(instance_name,response['status']))
@@ -104,7 +104,6 @@ def container_status():
  ips = []
 
  try: 
-   service = discovery.build('compute', 'beta', credentials=credentials)
    for instance_name in instances:
      response = service.instances().get(project=projectId, zone=zone, instance=instance_name).execute()
      ips.append(response['networkInterfaces'][0]['accessConfigs'][0]['natIP'])
