@@ -11,12 +11,12 @@ function print_color(){
   echo -e "${COLOR} $2 ${NC}"
 }
 
-service_status=$(sudo systemctl is-active docker)
+service_status=$(sudo systemctl is-enabled docker)
 host=$1
 
 echo "Checking Docker Service Status on $host!!"
 
-if [ $service_status == "active" ];then
+if [ $service_status == "enabled" ];then
   print_color "green" "Docker Service Enabled on $host!!"
 else
   print_color "red" "Docker Service is Disabled on $host . Enabling it!!" 
