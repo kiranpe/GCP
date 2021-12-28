@@ -1,5 +1,4 @@
 #!/usr/bin/bash
-
 function print_color(){
   NC='\033[0m' # No Color
 
@@ -12,12 +11,12 @@ function print_color(){
   echo -e "${COLOR} $2 ${NC}"
 }
 
-sym_link='/etc/systemd/system/multi-user.target.wants/docker.service'
+service_status=$(sudo systemctl is-active docker)
 host=$1
 
 echo "Checking Docker Service Status on $host!!"
 
-if [ -L $sym_link ];then
+if [ $service_status == "active" ];then
   print_color "green" "Docker Service Enabled on $host!!"
 else
   print_color "red" "Docker Service is Disabled on $host . Enabling it!!" 
