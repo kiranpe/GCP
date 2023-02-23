@@ -1,0 +1,10 @@
+variable "project_id" { default = "k8s-devops-377116" }
+variable "region" { default = "us-central1" }
+variable "sa_id" { default = "bq-dev-sa" }
+variable "sa_desc" { default = "BigQ Service Account" }
+variable "bigq_dataset_id" { default = "dev_devops_dataset" }
+variable "bigq_name" { default = "testing" }
+variable "bigq_desc" { default = "This is a test description" }
+variable "bigq_table_id" { default = "dev-devops-table" }
+variable "topic_name" { default = "bigq-topic" }
+variable "sub_name" { default = "bigq-sub" }
